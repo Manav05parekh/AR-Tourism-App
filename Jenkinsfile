@@ -42,20 +42,21 @@ pipeline {
         stage('Build Release APK') {
             steps {
                 echo '🏗️ Building release APK...'
-                sh 'flutter build apk --release'
+                sh 'flutter build apk --release --verbose --no-shrink'
             }
         }
 
         stage('Distribute via Firebase') {
             steps {
                 echo '🚀 Uploading build to Firebase App Distribution...'
-                sh """
-                    firebase appdistribution:distribute \
-                        build/app/outputs/flutter-apk/app-release.apk \
-                        --app $APP_ID \
-                        --groups "testers" \
-                        --token $FIREBASE_TOKEN
-                """
+                withCredentials([file(credentialsId: 'FIREBASE_SERVICE_ACCOUNT', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                sh '''
+                firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+                --app 1:542371597683:android:2b7f89f4d2d35618e20906 \
+                --groups testers
+                '''
+                }
+
             }
         }
 
