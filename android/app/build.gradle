@@ -17,7 +17,7 @@ def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
 android {
-    namespace "com.example.ar_vista"
+    namespace "com.manav.artourism"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         // Update this to your actual unique package name
-        applicationId "com.example.ar_vista"
+        applicationId "com.manav.artourism"
 
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
