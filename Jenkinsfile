@@ -60,18 +60,7 @@ pipeline {
             }
         }
 
-        stage('Upload to GCS') {
-            when {
-                expression { currentBuild.currentResult == 'SUCCESS' }
-            }
-            steps {
-                echo '☁️ Uploading APK to Google Cloud Storage...'
-                sh '''
-                    gsutil cp build/app/outputs/flutter-apk/app-release.apk \
-                        gs://ar-tourism-apks/releases/app-release-${BUILD_NUMBER}.apk
-                '''
-            }
-        }
+        
 
         stage('Commit and Push Changes') {
             steps {
