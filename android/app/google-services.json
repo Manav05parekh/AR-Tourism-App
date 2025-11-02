@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "542371597683",
+    "project_id": "ar-tourism-app-11a3e",
+    "storage_bucket": "ar-tourism-app-11a3e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542371597683:android:2b7f89f4d2d35618e20906",
+        "android_client_info": {
+          "package_name": "com.manav.artourism"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsbbfEdU5uoDvuMceMrOP0hfuHamwXbzQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
