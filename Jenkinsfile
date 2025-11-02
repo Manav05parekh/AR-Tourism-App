@@ -2,13 +2,11 @@ pipeline {
     agent any
 
     environment {
-    FLUTTER_HOME = '/opt/flutter'
-    ANDROID_HOME = '/opt/android-sdk'
-    PATH = "${FLUTTER_HOME}/bin:${FLUTTER_HOME}/bin/cache/dart-sdk/bin:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools:${env.PATH}"
-    FIREBASE_TOKEN = credentials('FIREBASE_TOKEN')
-    APP_ID = '1:542371597683:android:2b7f89f4d2d35618e20906'
-}
-
+        FLUTTER_HOME = '/opt/flutter'
+        ANDROID_HOME = '/usr/lib/android-sdk'
+        PATH = "${FLUTTER_HOME}/bin:${FLUTTER_HOME}/bin/cache/dart-sdk/bin:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${env.PATH}"
+        APP_ID = '1:542371597683:android:2b7f89f4d2d35618e20906'
+    }
 
     stages {
         stage('Checkout') {
@@ -21,6 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo '📥 Installing dependencies...'
+                sh 'flutter clean'
                 sh 'flutter pub get'
             }
         }
@@ -50,23 +49,40 @@ pipeline {
             steps {
                 echo '🚀 Uploading build to Firebase App Distribution...'
                 withCredentials([file(credentialsId: 'FIREBASE_SERVICE_ACCOUNT', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                sh '''
-                firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
-                --app 1:542371597683:android:2b7f89f4d2d35618e20906 \
-                --groups testers
-                '''
+                    sh '''
+                        export PATH=$PATH:/usr/local/bin
+                        firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
+                            --app 1:542371597683:android:2b7f89f4d2d35618e20906 \
+                            --groups testers \
+                            --debug
+                    '''
                 }
-
             }
         }
 
         stage('Upload to GCS') {
+            when {
+                expression { currentBuild.currentResult == 'SUCCESS' }
+            }
             steps {
                 echo '☁️ Uploading APK to Google Cloud Storage...'
-                sh """
+                sh '''
                     gsutil cp build/app/outputs/flutter-apk/app-release.apk \
-                    gs://ar-tourism-apks/releases/
-                """
+                        gs://ar-tourism-apks/releases/app-release-${BUILD_NUMBER}.apk
+                '''
+            }
+        }
+
+        stage('Commit and Push Changes') {
+            steps {
+                echo '📤 Committing any updated files...'
+                sh '''
+                    git config --global user.email "jenkins@ci.com"
+                    git config --global user.name "Jenkins CI"
+                    git add -f android/app/google-services.json || true
+                    git commit -m "Automated build and Firebase distribution [skip ci]" || echo "No changes to commit"
+                    git push origin main || echo "No push needed"
+                '''
             }
         }
     }
