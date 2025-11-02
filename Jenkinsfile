@@ -2,11 +2,12 @@ pipeline {
     agent any
 
     environment {
-        FLUTTER_HOME = "${HOME}/flutter"
-        PATH = "${FLUTTER_HOME}/bin:${HOME}/.npm-global/bin:${PATH}"
-        FIREBASE_TOKEN = credentials('FIREBASE_TOKEN')
-        APP_ID = '1:542371597683:android:2b7f89f4d2d35618e20906' // 🔁 Replace with real Firebase App ID
-    }
+    FLUTTER_HOME = '/opt/flutter'
+    PATH = "${FLUTTER_HOME}/bin:${FLUTTER_HOME}/bin/cache/dart-sdk/bin:${env.PATH}"
+    FIREBASE_TOKEN = credentials('FIREBASE_TOKEN')
+    APP_ID = '1:542371597683:android:2b7f89f4d2d35618e20906'
+}
+
 
     stages {
         stage('Checkout') {
